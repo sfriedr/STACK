@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 2619697  -->
+  <question type="stack">
+    <name>
+      <text>Funktionen Aufgabe 16 b)</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>In einem Experiment wird ein Objekt aus einer Höhe von {@S_yWert@} Metern senkrecht nach oben abgeschossen. Die Höhe des Objekts über dem Erdboden zu einem Zeitpunkt t (in Sekunden) wird durch die Funktion \(h(t) = \) {@h(t)@} (in Metern) beschrieben, wobei der Luftwiderstand berücksichtigt wird.</p>
+<p><em>Wenn du Kommazahlen eintippst, runde diese auf <strong>genau zwei Nachkommastellen</strong>.</em></p>
+<p><em>Gib deine Eingaben im Format <strong>[x=..., y=...]</strong> ein.</em></p>
+<p>b) Bestimme den Zeitpunkt und die maximale Höhe, die das Objekt erreicht.</p>
+<p>\(HP = \) [[input:ans1]]</p>
+<p>[[validation:ans1]]</p>
+<p></p>
+<p>tans_ungerundet = {@tans_ungerundet@}</p>
+<p>tans_gerundet     = {@tans_gerundet@}</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.1</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <stackversion>
+      <text>2026010500</text>
+    </stackversion>
+    <questionvariables>
+      <text><![CDATA[/*---------------------------------Funktionen--------------------------*/
+/*Funktion zum formatieren einer Liste von [x=1, x=2, ...] zu [1, 2, ...]*/
+liste_formatieren(l):=block(
+    [ergebnis:[], i],
+    for i:1 thru length(l) do (
+        ergebnis:append(ergebnis, [rhs(l[i])])
+    ),
+    ergebnis
+);
+
+/*Dieser Funktion übergibt man eine Liste von NS der ersten Ableitung "ns_df1_list". Die NS werden in die zweite Ableitung eingefügt und ihre Werte in der Ergebnisliste zurückgegeben.*/
+ns_df1_in_df2(l):=block(
+    [resultList:[], i],
+    for i:1 thru length(l) do (
+        resultList:append(resultList, [diff2_h(l[i])])
+    ),
+    resultList
+);
+
+/*Findet das Kriterium des Sattelpunktes (h''(t)=0) aus listReference und loescht entsprechend seines Indexes die Referenz des Sattelpunktes aus listReference und dessen x-Wert aus listValue.*/
+loesch_sattelpunktreferenz_und_Wert_von_sattelpunkt (listValue, listReference):=block(
+    [i, idx],
+    idx:100,
+    for i:1 thru length(listReference) do (
+        if listReference[i] = 0 then idx:i
+    ),
+    if idx # 100 then (
+        listReference:delete(listReference [idx], listReference),
+        listValue:delete(listValue [idx], listValue)
+    ),
+[listValue, listReference]
+);
+
+/*Durchsucht die Referenzliste nach dem Kriterium für einen HP (h''(t)<0), speichert dessen Index und gibt aus der Werteliste mittels dieses Indexes den Wert des HP zurück. Dient dazu damit ein Sattelpunkt nicht für eine Extremstelle gehalten wird.*/
+finde_HP_xWert(listValue, listReference):=block(
+    [i, idx_HP, HP_Reference, HP_Value],
+    HP_Reference:apply(min, listReference),
+    for i:1 thru length(listReference) do(
+        if listReference[i] = HP_Reference then idx_HP:i
+    ),
+    return (listValue[idx_HP])
+);
+
+/*Funktion rundet Elemente einer übergebenen Liste auf zwei Nachkommastellen.
+[12,12.1,12.2,12.994,12.995] -> [12.0,12.1,12.2,12.99,13.0]*/
+runden(list):=block(
+    [i, ergebnisliste:[]],
+    for i:1 thru length(list) do (
+        element:float(round(list[i]*100)/100),
+        ergebnisliste:append(ergebnisliste, [element])
+    ),
+    return (ergebnisliste)
+);
+
+/*--------------------------------------------------------------------*/
+
+/*----------Test------------*/
+/*h(t):=-7*t^3+49*t^2+23*t+51;*/
+/*diff1_h(t):=21*t^2+98*t+23;*/
+/*diff2_h(t):=42*t+98;*/
+/*[x=-4.42,y=1510.1]*/
+/*[x=148270607/33554432,y=57050056605153579661566537/37778931862957161709568]*/
+/*--------------------------*/
+a:rand_with_step(-10, 0, 1);
+b:rand_with_step(1, 50, 3);
+c:rand_with_step(1, 50, 2);
+d:rand_with_step(20, 100, 1);
+
+h(t):=a*t^3+b*t^2+c*t+d;
+diff1_h(t):=3*a*t^2+2*b*t+c;                              /*Erste Ableitung von h(t)*/
+diff2_h(t):=2*3*a*t+2*b;                                  /*Zweite Ableitung von h(t)*/
+
+
+/*--------------------Werte für Aufgabenstellung------------------------*/
+
+S_yWert:h(0);                                   /*y-Wert von Schnittpunkt mit y-Achse*/
+NS_xWert:rhs(realroots(h(t)=0)[1]);             /*x-Wert von Schnittpunkt mit x-Achse*/
+sekunden:1+rand(floor(NS_xWert));               /*Wert für Aufgabenstellung*/
+
+
+/*----------------------Aufgabenteil b) ---------------------------------*/
+
+ns_diff1_list_UNFORMATIERT:realroots(diff1_h(t));             /*Liste mit NS von h'(t)*/
+ns_diff1_list:liste_formatieren(ns_diff1_list_UNFORMATIERT);  /*Liste mit NS von h'(t) formatiert*/
+diff2_list:ns_df1_in_df2(ns_diff1_list);                      /*Liste von h''(NS_diff1)*/
+res:loesch_sattelpunktreferenz_und_Wert_von_sattelpunkt(ns_diff1_list, diff2_list);
+ns_diff1_list:first(res);
+diff2_list: second(res);
+HP_xWert:finde_HP_xWert(ns_diff1_list, diff2_list);           /*x-Wert des HP von h(t)*/
+HP_yWert:h(HP_xWert);                                         /*y-Wert des HP von h(t)*/
+
+ergebnisliste_ungerundet:[HP_xWert, HP_yWert];
+ergebnisliste_gerundet:runden(ergebnisliste_ungerundet);
+
+tans_ungerundet:[x=ergebnisliste_ungerundet[1], y=ergebnisliste_ungerundet[2]];
+tans_gerundet:[x=ergebnisliste_gerundet[1], y=ergebnisliste_gerundet[2]];
+
+
+/*----------------------------------Validierungsfunktion--------------------------------*/
+
+anzahl_signifikante_nachkommastelle(d):=block(
+    [s,nachkommastellen],
+    s:string(d),
+    nachkommastellen:split(s, ".")[2],
+    nachkommastellen_list:charlist(nachkommastellen),
+    nachkommastellen_list_length:length(nachkommastellen_list),
+    if nachkommastellen_list_length = 0 then
+        return (0)
+    elseif nachkommastellen_list_length = 1 and nachkommastellen_list[1] = "0" then
+        return (0)
+    elseif nachkommastellen_list_length > 1 then
+    return (nachkommastellen_list_length)
+);
+
+
+entfernePunktUndLetzteZiffer(d):=block(
+    [dAlsString, dAlsList, dOhnePunkt, dOhnePunktUndLetzteZiffer:[]],
+    dAlsString:string(d),
+    dAlsList:charlist(dAlsString),
+    dOhnePunkt:delete(".", dAlsList),
+    for i:1 thru length(dOhnePunkt)-1 do (
+        dOhnePunktUndLetzteZiffer:append(dOhnePunktUndLetzteZiffer, [dOhnePunkt[i]])
+    ),
+    return (dOhnePunktUndLetzteZiffer)
+);
+
+
+is_fraction(zahl) := block(
+    zahl_betrag:abs(zahl),
+    (not integerp(zahl_betrag)) and
+    (not floatnump(zahl_betrag)) and
+    (op(zahl_betrag) = "/")
+);
+
+
+validate(ans, tans) := block(
+    [anz_nk_ans, anz_nk_tans,
+        nachkommastellen_ans,
+        nachkommastellen_tans,
+        nachkommast_letzteZiffer_ans, nachkommast_letzteZiffer_tans,
+        vorkommastellen_ans, vorkommastellen_tans,
+        alleZiffernAusserLetzte_ans, alleZiffernAusserLetzte_tans, ergebnis:"ist korrekt."],
+    if integerp(ans) and integerp(tans) then (
+        if is(equal(ans, tans)) then (
+            return (ergebnis)
+        )
+        else (
+            ergebnis:"ist nicht korrekt.",
+            return (ergebnis)
+        )
+    )
+    else if integerp(ans) and floatnump(tans) then (
+        vorkommastellen_tans:split(string(tans), ".")[1],
+        nachkommastellen_tans:[split(string(tans), ".")[2]],
+        if is(equal(string(ans), vorkommastellen_tans)) and length(nachkommastellen_tans) = 1 and nachkommastellen_tans[1] = "0" then (
+            return (ergebnis)
+        )
+        else (
+            ergebnis:"ist nicht korrekt.",
+            return (ergebnis)
+        )
+    )
+    else if floatnump(ans) and integerp(tans) then (
+        vorkommastellen_ans:split(string(ans), ".")[1],
+        nachkommastellen_ans:[split(string(ans), ".")[2]],
+        if is(equal(string(tans), vorkommastellen_ans)) and length(nachkommastellen_ans) = 1 and nachkommastellen_ans[1] = "0" then (
+            return (ergebnis)
+        )
+        else (
+            ergebnis:"ist nicht korrekt.",
+            return (ergebnis)
+        )
+    )
+    else if (is_fraction(ans) and floatnump(tans)) or (floatnump(ans) and is_fraction(tans)) then (
+        if is_fraction(ans) then ans:round(ans*100)/100.0,
+        if is_fraction(tans) then tans:round(tans*100)/100.0,
+        if is(equal(ans, tans)) then (
+        return (ergebnis)
+        )
+        else (
+            ergebnis:"ist nicht korrekt.",
+            return (ergebnis)
+        )
+    )
+    else if is_fraction(ans) and is_fraction(tans) then(
+        if is(equal(ans, tans)) then (
+            return (ergebnis)
+        )
+        else (
+            ergebnis:"ist nicht korrekt.",
+            return (ergebnis)
+        )
+    )
+    else if floatnump(ans) and floatnump(tans) then (
+        if is(equal(ans, tans)) then (
+            return (ergebnis)
+        )
+        else (
+            vorkommastellen_ans:split(string(ans), ".")[1],
+            vorkommastellen_tans:split(string(tans), ".")[1],
+            anz_nk_ans: anzahl_signifikante_nachkommastelle(ans),
+            anz_nk_tans:anzahl_signifikante_nachkommastelle(tans),
+            if vorkommastellen_ans = vorkommastellen_tans and anz_nk_ans # anz_nk_tans then (
+                ergebnis:"hat falsche Anzahl an Nachkommastellen.",
+                return (ergebnis)
+            )
+            else (
+                nachkommast_letzteZiffer_ans: last(charlist(string(ans))),
+                nachkommast_letzteZiffer_tans:last(charlist(string(tans))),
+                alleZiffernAusserLetzte_ans:entfernePunktUndLetzteZiffer(ans),
+                alleZiffernAusserLetzte_tans:entfernePunktUndLetzteZiffer(tans),
+                if is(equal(alleZiffernAusserLetzte_ans, alleZiffernAusserLetzte_tans)) and nachkommast_letzteZiffer_ans # nachkommast_letzteZiffer_tans then (
+                    ergebnis:" ist falsch gerundet.",
+                    return (ergebnis)
+                )
+                else (
+                    ergebnis:"ist nicht korrekt.",
+                    return (ergebnis)
+                )
+            )
+        )
+    )
+);]]></text>
+    </questionvariables>
+    <specificfeedback format="html">
+      <text><![CDATA[<p>[[feedback:prt1]]</p>]]></text>
+    </specificfeedback>
+    <questionnote format="html">
+      <text><![CDATA[<p>\(h(t) = \) {@h(t)@}</p>
+<p>\(Abschusshöhe = {@S_yWert@}\)</p>
+<p>\(b) \Rightarrow HP = {@ergebnisliste_ungerundet@}\)</p>
+<p>\(b) \Rightarrow HP = {@ergebnisliste_gerundet@}\)</p>]]></text>
+    </questionnote>
+    <questiondescription format="html">
+      <text></text>
+    </questiondescription>
+    <questionsimplify>1</questionsimplify>
+    <assumepositive>0</assumepositive>
+    <assumereal>0</assumereal>
+    <prtcorrect format="html">
+      <text><![CDATA[<p>Richtige Antwort, gut gemacht!</p>]]></text>
+    </prtcorrect>
+    <prtpartiallycorrect format="html">
+      <text><![CDATA[<p>Ihre Antwort ist teilweise korrekt.</p>]]></text>
+    </prtpartiallycorrect>
+    <prtincorrect format="html">
+      <text><![CDATA[<p>Falsche Antwort.</p>]]></text>
+    </prtincorrect>
+    <decimals>.</decimals>
+    <scientificnotation>*10</scientificnotation>
+    <multiplicationsign>dot</multiplicationsign>
+    <sqrtsign>1</sqrtsign>
+    <complexno>i</complexno>
+    <inversetrig>cos-1</inversetrig>
+    <logicsymbol>lang</logicsymbol>
+    <matrixparens>[</matrixparens>
+    <isbroken>0</isbroken>
+    <variantsselectionseed></variantsselectionseed>
+    <input>
+      <name>ans1</name>
+      <type>algebraic</type>
+      <tans>tans_gerundet</tans>
+      <boxsize>10</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint>[x=..., y=...]</syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>0</forbidfloat>
+      <requirelowestterms>1</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>1</mustverify>
+      <showvalidation>1</showvalidation>
+      <options></options>
+    </input>
+    <prt>
+      <name>prt1</name>
+      <value>1.0000000</value>
+      <autosimplify>1</autosimplify>
+      <feedbackstyle>1</feedbackstyle>
+      <feedbackvariables>
+        <text>validationtestresult_element_1:validate(rhs(ans1[1]), rhs(tans_gerundet[1]));
+validationtestresult_element_2:validate(rhs(ans1[2]), rhs(tans_gerundet[2]));</text>
+      </feedbackvariables>
+      <node>
+        <name>0</name>
+        <description></description>
+        <answertest>CasEqual</answertest>
+        <sans>validationtestresult_element_1</sans>
+        <tans><![CDATA["ist korrekt."]]></tans>
+        <testoptions></testoptions>
+        <quiet>0</quiet>
+        <truescoremode>+</truescoremode>
+        <truescore>0.5</truescore>
+        <truepenalty></truepenalty>
+        <truenextnode>1</truenextnode>
+        <trueanswernote>prt1-1-T</trueanswernote>
+        <truefeedback format="html">
+          <text><![CDATA[<p>x-Wert {@validationtestresult_element_1@}</p>]]></text>
+        </truefeedback>
+        <falsescoremode>-</falsescoremode>
+        <falsescore>0</falsescore>
+        <falsepenalty></falsepenalty>
+        <falsenextnode>1</falsenextnode>
+        <falseanswernote>prt1-1-F</falseanswernote>
+        <falsefeedback format="html">
+          <text><![CDATA[<p>x-Wert {@validationtestresult_element_1@}</p>]]></text>
+        </falsefeedback>
+      </node>
+      <node>
+        <name>1</name>
+        <description></description>
+        <answertest>CasEqual</answertest>
+        <sans>validationtestresult_element_2</sans>
+        <tans><![CDATA["ist korrekt."]]></tans>
+        <testoptions></testoptions>
+        <quiet>0</quiet>
+        <truescoremode>+</truescoremode>
+        <truescore>0.5</truescore>
+        <truepenalty></truepenalty>
+        <truenextnode>-1</truenextnode>
+        <trueanswernote>prt1-2-T</trueanswernote>
+        <truefeedback format="html">
+          <text><![CDATA[<p>y-Wert {@validationtestresult_element_1@}</p>]]></text>
+        </truefeedback>
+        <falsescoremode>-</falsescoremode>
+        <falsescore>0</falsescore>
+        <falsepenalty></falsepenalty>
+        <falsenextnode>-1</falsenextnode>
+        <falseanswernote>prt1-2-F</falseanswernote>
+        <falsefeedback format="html">
+          <text><![CDATA[<p>y-Wert {@validationtestresult_element_2@}</p>]]></text>
+        </falsefeedback>
+      </node>
+    </prt>
+    <deployedseed>1168794495</deployedseed>
+    <deployedseed>823191518</deployedseed>
+    <deployedseed>2135097786</deployedseed>
+    <deployedseed>1463300038</deployedseed>
+    <deployedseed>173428664</deployedseed>
+    <deployedseed>627691242</deployedseed>
+    <deployedseed>229897477</deployedseed>
+    <deployedseed>2019067054</deployedseed>
+    <deployedseed>14166683</deployedseed>
+    <deployedseed>173916720</deployedseed>
+    <deployedseed>588689537</deployedseed>
+    <deployedseed>1275705167</deployedseed>
+    <deployedseed>1843164406</deployedseed>
+    <deployedseed>1525482749</deployedseed>
+    <deployedseed>378323829</deployedseed>
+    <deployedseed>2122364590</deployedseed>
+    <deployedseed>75301865</deployedseed>
+    <deployedseed>396438051</deployedseed>
+    <deployedseed>1600349357</deployedseed>
+    <deployedseed>19173463</deployedseed>
+  </question>
+
+</quiz>
