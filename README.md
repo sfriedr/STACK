@@ -9,14 +9,14 @@ Diese Aufgaben sind randomisiert und haben individuelle Rückmeldebäume zum Val
 Dem User ist eine randomisierte Exponentialfunktion gegeben, welche in ein Koordinatensystem gezeichnet werden soll. Zum Zeichnen hat der User die Wahl, ob er die Parameter in separate Inputfelder einträgt oder die Slider im Koordinatensystem zum Anpassen der Parameter nutzt. Damit sich der Graph im Koordinatensystem dynamisch anpasst, wurde er mit JavaScript programmiert.
 
 Hier eine Veranschaulichung, wie Task 1 aussieht:
-![Task 1 - Aufgabenstellung, Inputs, Plot](/docs/Screenshots/Task 1 - Aufgabenstellung, Inputs, Plot.png "Aufgabe Exponentialfunktion")
+![Task 1 - Aufgabenstellung, Inputs, Plot](/docs/Screenshots/Task1-Aufgabenstellung_Inputs_Plot.png "Aufgabe Exponentialfunktion")
 Der zugehörige Rückmeldebaum:
-![Task 1 - Rückmeldebaum](/docs/Screenshots/Task 1 - Rückmeldebaum.png "Exponentialfunktion Rückmeldebaum")
+![Task 1 - Rückmeldebaum](/docs/Screenshots/Task1-Rückmeldebaum.png "Exponentialfunktion Rückmeldebaum")
 Validierung und Feedback:
-![Task 1 - Rückmeldung](/docs/Screenshots/Task 1 - Validierung, Rückmeldung.png "Exponentialfunktion Rückmeldung")
+![Task 1 - Rückmeldung](/docs/Screenshots/Task1-Validierung_Rückmeldung.png "Exponentialfunktion Rückmeldung")
 
 
 ## Task 2 - Textaufgabe zum Hochpunkt einer kubischen Funktion
 Dem User ist eine randomisierte, kubische Funktion gegeben. Die Eingaben erfolgen in dem Format \([x=...,y=...]\)
-![Task 2 - Validierung während der Eingabe](/docs/Screenshots/Task 2 - Validierung während Eingabe.png "kubische Funktion Aufgabenstellung, Input")
-![Task 2 - Rückmeldung](/docs/Screenshots/Task 2 - Validierung nach Abgabe.png "kubische Funktion Rückmeldung")
+![Task 2 - Validierung während der Eingabe](/docs/Screenshots/Task2-Validierung_während_Eingabe.png "kubische Funktion Aufgabenstellung, Input")
+![Task 2 - Rückmeldung](/docs/Screenshots/Task2-Validierung_nach_Abgabe.png "kubische Funktion Rückmeldung")
